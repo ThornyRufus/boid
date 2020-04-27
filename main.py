@@ -64,7 +64,7 @@ class boid:
                                     (self.posx + ( cos(self.delta) * (self.size/3) ), self.posy + ( sin(self.delta) * (self.size/3) ) )]
         body = pygame.draw.polygon(self.surface,boid_color,self.body_points,0)
 
-    def move(self,speed=10): #calculer les nouveaux body points selon l'angle
+    def move(self,speed=10):
 
         if self.objective > self.alpha:
             self.total_angle += self.turn_speed
