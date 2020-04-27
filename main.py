@@ -17,7 +17,7 @@ class boid:
         self.posy = randrange(0,1080)
         self.speed = speed
         self.total_angle = randrange(0,360)
-        self.objective = 0
+        self.objective = randrange(0,360)
         self.alpha = radians(self.total_angle % 360)
         self.turn_speed = 1
 
