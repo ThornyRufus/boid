@@ -1,4 +1,4 @@
-import pygame, sys
+import pygame, sys, names
 
 from random import randrange
 from statistics import median
@@ -11,12 +11,13 @@ red_color = pygame.Color('#FF0000')
 global screen
 SCREEN_WIDTH = 1200
 SCREEN_HEIGHT = 800
-
+font = pygame.font.SysFont("arial", 15)
 
 class boid:
 
-    def __init__(self,size,speed=1):
+    def __init__(self,size,speed,color=boid_color):
         global screen
+        self.color = color
         self.size = size
         self.posx = randrange(0,SCREEN_WIDTH)
         self.posy = randrange(0,SCREEN_HEIGHT)
@@ -25,6 +26,7 @@ class boid:
         self.objective = randrange(0,360)
         self.alpha = radians(self.total_angle % 360)
         self.turn_speed = 1
+        self.text = font.render(names.get_first_name(), True, (0, 128, 0))
 
     def find_objective(self,object_list):
 
@@ -70,15 +72,15 @@ class boid:
         self.delta = radians((self.total_angle + 270) % 360)
 
     def draw(self):
+
         self.actualize()
         self.body_points = [(self.posx + ( cos(self.alpha) * self.size ), self.posy + ( sin(self.alpha) * self.size ) ),
                                     (self.posx + ( cos(self.beta) * (self.size/3) ), self.posy + ( sin(self.beta) * (self.size/3) ) ),
                                     (self.posx + ( cos(self.delta) * (self.size/3) ), self.posy + ( sin(self.delta) * (self.size/3) ) )]
-        body = pygame.draw.polygon(screen,boid_color,self.body_points,0)
+        body = pygame.draw.polygon(screen,self.color,self.body_points,0)
+        screen.blit(self.text, (self.posx+15, self.posy-25))
 
-
-
-    def move(self,speed=10):
+    def move(self):
 
         if self.objective > self.alpha:
             self.total_angle += self.turn_speed
@@ -86,8 +88,8 @@ class boid:
             self.total_angle -= self.turn_speed
         self.actualize()
 
-        self.posx +=  int(( cos(self.alpha) * speed ))
-        self.posy += int(( sin(self.alpha) * speed ))
+        self.posx +=  int(( cos(self.alpha) * self.speed ))
+        self.posy += int(( sin(self.alpha) * self.speed ))
 
 
 
@@ -104,7 +106,8 @@ class arena:
         screen.fill(back_color)
 
         for i in range(bd_num):
-            self.object_list.append(boid(randrange(5,25)))
+
+            self.object_list.append(boid( randrange(10,20), randrange(1,4)*5,pygame.Color(randrange(0,255),randrange(0,255),randrange(0,255),255) ) )
 
         pygame.display.update()
         clock = pygame.time.Clock()
@@ -127,7 +130,7 @@ class arena:
 
 
 
-            for object in self.object_list: #a changer, methode pour remetre les objets dans le cadre
+            for object in self.object_list: #a changer, methode pour remetre les objets dans le cadre//
                 if object.posx > self.width:
                     object.posx = 0
                 if object.posx < 0:
@@ -149,4 +152,4 @@ class arena:
         pygame.event.clear()
         pygame.event.wait()
 '''
-display = arena(SCREEN_WIDTH,SCREEN_HEIGHT,100)
+display = arena(SCREEN_WIDTH,SCREEN_HEIGHT,150)
