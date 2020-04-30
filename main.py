@@ -7,7 +7,6 @@ pygame.init()
 
 back_color = pygame.Color('#86BBD8')
 boid_color = pygame.Color('#2F4858')
-red_color = pygame.Color('#FF0000')
 global screen
 SCREEN_WIDTH = 1200
 SCREEN_HEIGHT = 800
@@ -58,14 +57,6 @@ class boid:
                     angle_list.append(object.alpha)
                 self.objective = median(angle_list)
 
-    '''
-    def refactoredFindObj(self,board):
-        center = (self.x,self.y)
-        radius = 100
-        direction = self.alpha
-    '''
-
-
     def actualize(self):
         self.alpha = radians(self.total_angle % 360)
         self.beta = radians((self.total_angle + 90) % 360)
@@ -77,7 +68,7 @@ class boid:
         self.body_points = [(self.posx + ( cos(self.alpha) * self.size ), self.posy + ( sin(self.alpha) * self.size ) ),
                                     (self.posx + ( cos(self.beta) * (self.size/3) ), self.posy + ( sin(self.beta) * (self.size/3) ) ),
                                     (self.posx + ( cos(self.delta) * (self.size/3) ), self.posy + ( sin(self.delta) * (self.size/3) ) )]
-        body = pygame.draw.polygon(screen,self.color,self.body_points,0)
+        pygame.draw.polygon(screen,self.color,self.body_points,0)
         screen.blit(self.text, (self.posx+15, self.posy-25))
 
     def move(self):
@@ -91,65 +82,50 @@ class boid:
         self.posx +=  int(( cos(self.alpha) * self.speed ))
         self.posy += int(( sin(self.alpha) * self.speed ))
 
-
+        if self.posx > SCREEN_WIDTH:
+            self.posx -= SCREEN_WIDTH
+        if self.posx < 0:
+            self.posx += SCREEN_WIDTH
+        if self.posy < 0:
+            self.posy += SCREEN_HEIGHT
+        if self.posy > SCREEN_HEIGHT:
+            self.posy -= SCREEN_HEIGHT
 
 class arena:
     def __init__(self,x,y,bd_num):
         self.width = x
         self.height = y
-
         self.object_list = []
-        #pygame.display.set_icon()
-        pygame.display.set_caption('BOID simulation')
+
+        pygame.display.set_caption('Stupid and Turbid BOID Simulator')
         global screen
         screen = pygame.display.set_mode([self.width,self.height])
         screen.fill(back_color)
 
         for i in range(bd_num):
-
-            self.object_list.append(boid( randrange(10,20), randrange(1,4)*5,pygame.Color(randrange(0,255),randrange(0,255),randrange(0,255),255) ) )
+            self.object_list.append(boid( randrange(10,20), randrange(1,4)*4,pygame.Color(randrange(0,255),randrange(0,255),randrange(0,255),255) ) )
 
         pygame.display.update()
         clock = pygame.time.Clock()
 
+        #Not in GitHub, add your own music file
+        pygame.mixer.music.load('birdSounds.mp3')
+        pygame.mixer.music.play(-1)
+
         while True:
             clock.tick(60)
 
-            # Process events
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     sys.exit()
 
-            #clear screen
             screen.fill(back_color)
 
             for object in self.object_list:
                 object.find_objective(self.object_list)
-
                 object.move()
-
-
-
-            for object in self.object_list: #a changer, methode pour remetre les objets dans le cadre//
-                if object.posx > self.width:
-                    object.posx = 0
-                if object.posx < 0:
-                    object.posx = self.width
-                if object.posy < 0:
-                    object.posy = self.height
-                if object.posy > self.height:
-                    object.posy = 0
-
-            # Move objects ...
-            for object in self.object_list: #draw, pas de probleme
                 object.draw()
 
-            # Draw objects ...
-
-            # Update the screen
             pygame.display.flip()
-'''
-        pygame.event.clear()
-        pygame.event.wait()
-'''
-display = arena(SCREEN_WIDTH,SCREEN_HEIGHT,150)
+
+display = arena(SCREEN_WIDTH,SCREEN_HEIGHT,100)
